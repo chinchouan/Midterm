@@ -1,6 +1,6 @@
 import os
 
-from pack.modu import check_table, create_db, load_data
+from pack.modu import check_table, create_db, load_data, login
 
 db_path = "./library.db"
 users_data_path = "./users.csv"
@@ -8,10 +8,20 @@ books_data_path = "./books.json"
 if __name__ == "__main__":
     # Database check
     db_exists = os.path.isfile(db_path)
+    login_status = False
+    if not db_exists:
+        create_db(db_path)
+        load_data(db_path, users_data_path, books_data_path)
+    # Tables check
     tables_exists = check_table(db_path)
-    if not db_exists or tables_exists:
-        print(create_db(db_path))
-        print(load_data(db_path, users_data_path, books_data_path))
+    if not tables_exists:
+        create_db(db_path)
+        load_data(db_path, users_data_path, books_data_path)
+    # login
+    while not login_status:
+        account = input("請輸入帳號：")
+        password = input("請輸入密碼：")
+        login(db_path, account, password)
     # CURD
     try:
         pass

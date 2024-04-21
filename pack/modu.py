@@ -33,7 +33,9 @@ def create_db(db_path: str) -> bool:
         conn.close()
         result = True
     except Exception as e:
-        print("Error", e)
+        print('創建資料庫作業發生錯誤')
+        print(f'錯誤代碼為：{e.errno}')
+        print(f'錯誤訊息為：{e.strerror}')
         result = False
     return result
 
@@ -51,13 +53,11 @@ def load_data(db_path, *data_path) -> bool:
         with open(data_path[0], 'r') as f:
             users = f.read()
             users_format = users.split('\n')
-            print(users_format)
         for uf in users_format:
-            print(uf)
             uf_split = uf.split(',')
-            # # username and password not a user
-            # if uf_split[0] == "username" and uf_split[1] == "password":
-            #     continue
+            # username and password not a user
+            if uf_split[0] == "username" and uf_split[1] == "password":
+                continue
             cmd = "Insert into users (username, password) values(?,?)"
             cursor.execute(cmd, (uf_split[0], uf_split[1]))
         # Write books
@@ -99,6 +99,56 @@ def check_table(db_path) -> bool:
         cursor.close()
         conn.close()
         return True
+    except AssertionError as ae:
+        print(ae)
+        return False
     except Exception as e:
-        print(e)
+        print('檢查表格作業發生錯誤')
+        print(f'錯誤代碼為：{e.errno}')
+        print(f'錯誤訊息為：{e.strerror}')
+        return False
+
+
+def login(db_path: str, account: str, password: str) -> bool:
+    """_summary_
+
+    Args:
+        account (str): _description_
+        password (str): _description_
+
+    Returns:
+        bool: _description_
+    """
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("Select username, password from users")
+        ac_table = cursor.fetchall()
+        ac_exists = False
+        pwd_correct = False
+        for data in ac_table:
+            ac, pwd = data
+            if account == ac:
+                ac_exists = True
+                if password == pwd:
+                    pwd_correct = True
+        if ac_exists and pwd_correct:
+            login_status = True
+        else:
+            login_status = False
+            if not ac_exists and not pwd_correct:
+                print("帳密錯誤")
+            elif not ac_exists:
+                print("帳號錯誤")
+            elif not pwd_correct:
+                print("密碼錯誤")
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return login_status
+    except Exception as e:
+        print('登入作業發生錯誤')
+        print(f'錯誤代碼為：{e.errno}')
+        print(f'錯誤訊息為：{e.strerror}')
         return False
