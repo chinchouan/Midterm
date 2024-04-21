@@ -2,7 +2,7 @@ import json
 import sqlite3
 
 
-def create_db(db_path: str) -> bool:
+def create_db(db_path: str) -> None:
     """This function will create database(library.db)
 
     Args:
@@ -31,20 +31,18 @@ def create_db(db_path: str) -> bool:
         conn.commit()
         cursor.close()
         conn.close()
-        result = True
     except Exception as e:
         print('創建資料庫作業發生錯誤')
         print(f'錯誤代碼為：{e.errno}')
         print(f'錯誤訊息為：{e.strerror}')
-        result = False
-    return result
 
 
-def load_data(db_path, *data_path) -> bool:
-    """_summary_
+def load_data(db_path: str, *data_path: tuple) -> None:
+    """Import data into database
 
-    Returns:
-        bool: _description_
+    Args:
+        db_path (str): Database path
+        *data_path(list): All need to import data file path
     """
     try:
         conn = sqlite3.connect(db_path)
@@ -73,20 +71,24 @@ def load_data(db_path, *data_path) -> bool:
         conn.commit()
         cursor.close()
         conn.close()
-        result = True
     except FileNotFoundError:
         print('找不到檔案...')
-        result = False
     except Exception as e:
         print('開檔發生錯誤...')
         print(f'錯誤代碼為：{e.errno}')
         print(f'錯誤訊息為：{e.strerror}')
         print(f'錯誤檔案為：{e.filename}')
-        result = False
-    return result
 
 
-def check_table(db_path) -> bool:
+def check_table(db_path: str) -> bool:
+    """Check that the data table in the database exists
+
+    Args:
+        db_path (str): Database path
+
+    Returns:
+        bool: tables exists or unexists
+    """
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -110,14 +112,14 @@ def check_table(db_path) -> bool:
 
 
 def login(db_path: str, account: str, password: str) -> bool:
-    """_summary_
+    """Login to the Data tables CRUD system
 
     Args:
-        account (str): _description_
-        password (str): _description_
+        account (str): username
+        password (str): password
 
     Returns:
-        bool: _description_
+        bool: Login success or failed
     """
     try:
         conn = sqlite3.connect(db_path)
@@ -152,3 +154,16 @@ def login(db_path: str, account: str, password: str) -> bool:
         print(f'錯誤代碼為：{e.errno}')
         print(f'錯誤訊息為：{e.strerror}')
         return False
+
+
+def menu_builder() -> None:
+    """Print data tables CRUD menu"""
+    print("-" * 19)
+    print("", "資料表 CRUD", sep="    ")
+    print("-" * 19)
+    print("", "1. 增加記錄", sep="    ")
+    print("", "2. 刪除記錄", sep="    ")
+    print("", "3. 修改記錄", sep="    ")
+    print("", "4. 查詢記錄", sep="    ")
+    print("", "5. 資料清單", sep="    ")
+    print("-" * 19)

@@ -1,6 +1,6 @@
 import os
 
-from pack.modu import check_table, create_db, load_data, login
+from pack.modu import check_table, create_db, load_data, login, menu_builder
 
 db_path = "./library.db"
 users_data_path = "./users.csv"
@@ -21,10 +21,12 @@ if __name__ == "__main__":
     while not login_status:
         account = input("請輸入帳號：")
         password = input("請輸入密碼：")
-        login(db_path, account, password)
+        login_status = login(db_path, account, password)
+
     # CURD
     try:
-        pass
+        menu_builder()
+        choice = input("選擇要執行的功能(Enter離開)：")
     except Exception as e:
         print('XXX作業發生錯誤')
         print(f'錯誤代碼為：{e.errno}')
