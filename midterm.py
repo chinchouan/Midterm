@@ -4,6 +4,8 @@ from pack.modu import (
     add_books,
     check_table,
     create_db,
+    delete_books,
+    edit_books,
     load_data,
     login,
     menu_builder,
@@ -55,7 +57,7 @@ if __name__ == "__main__":
                         has_null_data = True
 
                 if has_null_data:
-                    print("=>給定的條件不足，無法進行修改作業")
+                    print("=>給定的條件不足，無法進行新增作業")
                 else:
                     add_books(db_path, datas)
             except ValueError:
@@ -65,12 +67,37 @@ if __name__ == "__main__":
                 print(f'錯誤代碼為：{e.errno}')
                 print(f'錯誤訊息為：{e.strerror}')
         elif choice == "2":
-            pass
+            try:
+                show_books(db_path)
+                delete_index = input("請問要刪除哪一本書？：")
+                if delete_index == "":
+                    print("=>給定的條件不足，無法進行刪除作業")
+                else:
+                    delete_books(db_path, delete_index)
+            except Exception as e:
+                print('特定資料表顯示作業發生錯誤')
+                print(f'錯誤代碼為：{e.errno}')
+                print(f'錯誤訊息為：{e.strerror}')
         elif choice == "3":
             try:
                 show_books(db_path)
                 edit_index = input("請問要修改哪一本書的標題？：")
+                edit_title = input("請輸入要更改的標題：")
+                edit_author = input("請輸入要更改的作者：")
+                edit_publisher = input("請輸入要更改的出版社：")
+                edit_year = input("請輸入要更改的年份：")
+                edit_data = (edit_index, edit_title, edit_author, edit_publisher, edit_year)
+                has_null_data = False
+                for data in edit_data:
+                    if data == "":
+                        has_null_data = True
 
+                if has_null_data:
+                    print("=>給定的條件不足，無法進行修改作業")
+                else:
+                    edit_books(db_path, edit_data)
+            except ValueError:
+                print("年份請輸入整數")
             except Exception as e:
                 print('資料表顯示作業發生錯誤')
                 print(f'錯誤代碼為：{e.errno}')

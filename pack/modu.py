@@ -189,7 +189,7 @@ def show_books(db_path: str) -> None:
     # Show data
     for book in result:
         title, author, publisher, year = book
-        print(f"|{title:6s}|{author:9s}|{publisher:8s}|{year:8d}|")
+        print(f"|{title:6s}|{author:9s}|{publisher:8s}|{year:<8d}|")
     conn.commit()
     cursor.close()
     conn.close()
@@ -212,7 +212,7 @@ def search_books_data(db_path: str, index: str) -> None:
     print("|  title  |   author   |  publisher  |   year  |")
     for book in result:
         title, author, publisher, year = book
-        print(f"|{title:6s}|{author:9s}|{publisher:8s}|{year:8d}|")
+        print(f"|{title:6s}|{author:9s}|{publisher:8s}|{year:<8d}|")
     conn.commit()
     cursor.close()
     conn.close()
@@ -235,17 +235,64 @@ def add_books(db_path: str, datas: tuple) -> None:
     title, author, publisher, year = datas
     year: int = int(year)
     # Check the book exists or exists, if not exists append it
-    result = cursor.execute(f"Select title from books where title like '{title}'")
-    if result is not None:
-        print("新增失敗：圖書已經存在")
+    cursor.execute(f"Select title from books where title like '{title}'")
+    result = cursor.fetchall()
+    if result != []:
+        print("新增失敗：書籍資料已經存在")
     else:
         cmd = "Insert into books(title, author, publisher, year) values(?, ?, ?, ?)"
         cursor.execute(cmd, (title, author, publisher, year))
         print("異動 1 記錄")
-    conn.commit()
+        conn.commit()
+        show_books(db_path)
     cursor.close()
     conn.close()
 
 
 def edit_books(db_path: str, datas: tuple) -> None:
-    pass
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    # Data split
+    index: str
+    title: str
+    author: str
+    publisher: str
+    year: str
+    index, title, author, publisher, year = datas
+    year: int = int(year)
+    # Search data
+    cmd = f"""select title,author,publisher,year from books
+    where title like '{title}' """
+    book_exists = cursor.execute(cmd)
+    if book_exists is None:
+        print("欲修改書籍資料不存在")
+    else:
+        cmd = """Update books set title = ?, author = ?, publisher = ?, year = ?
+        where title = ?"""
+        cursor.execute(cmd, (title, author, publisher, year, index))
+        print("異動 1 記錄")
+        conn.commit()
+        # Show changed data
+        show_books(db_path)
+    cursor.close()
+    conn.close()
+
+
+def delete_books(db_path: str, title: str):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cmd = f"""select title,author,publisher,year from books
+    where title like '{title}' """
+    book_exists = cursor.execute(cmd)
+    if book_exists is None:
+        print("欲刪除書籍資料不存在")
+    else:
+        cmd = "Delete from books where title = ?"
+        cursor.execute(cmd, title)
+        print("異動 1 記錄")
+        conn.commit()
+        # Show changed data
+        show_books(db_path)
+    cursor.close()
+    conn.close()
