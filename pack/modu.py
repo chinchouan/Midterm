@@ -167,3 +167,27 @@ def menu_builder() -> None:
     print("", "4. 查詢記錄", sep="    ")
     print("", "5. 資料清單", sep="    ")
     print("-" * 19)
+
+
+def show_books(db_path: str) -> None:
+    """Show the books data table
+
+    Args:
+        db_path (str): Database path
+    """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    cursor.execute("Select title,author,publisher,year from books")
+    result = cursor.fetchall()
+    print("|  title  |   author   |  publisher  |   year  |")
+    for book in result:
+        title, author, publisher, year = book
+        print(f"|{title:6s}|{author:9s}|{publisher:7s}|{year:8d}|")
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def select_book() -> None:
+    pass

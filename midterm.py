@@ -1,6 +1,14 @@
 import os
 
-from pack.modu import check_table, create_db, load_data, login, menu_builder
+from pack.modu import (
+    check_table,
+    create_db,
+    load_data,
+    login,
+    menu_builder,
+    select_book,
+    show_books,
+)
 
 db_path = "./library.db"
 users_data_path = "./users.csv"
@@ -24,10 +32,33 @@ if __name__ == "__main__":
         login_status = login(db_path, account, password)
 
     # CURD
-    try:
+    active = True
+    while active:
         menu_builder()
         choice = input("選擇要執行的功能(Enter離開)：")
-    except Exception as e:
-        print('XXX作業發生錯誤')
-        print(f'錯誤代碼為：{e.errno}')
-        print(f'錯誤訊息為：{e.strerror}')
+        if choice == "":
+            active = False
+            continue
+        elif choice == "1":
+            pass
+        elif choice == "2":
+            pass
+        elif choice == "3":
+            pass
+        elif choice == "4":
+            try:
+                select_data = input("請輸入想查詢的關鍵字：")
+                select_book(select_data)
+            except Exception as e:
+                print('資料表顯示作業發生錯誤')
+                print(f'錯誤代碼為：{e.errno}')
+                print(f'錯誤訊息為：{e.strerror}')
+        elif choice == "5":
+            try:
+                show_books(db_path)
+            except Exception as e:
+                print('資料表顯示作業發生錯誤')
+                print(f'錯誤代碼為：{e.errno}')
+                print(f'錯誤訊息為：{e.strerror}')
+        else:
+            print("=>無效的選擇")
