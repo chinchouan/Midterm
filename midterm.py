@@ -64,7 +64,7 @@ if __name__ == "__main__":
                 else:
                     lib.delete_books(db_path, delete_index)
             except Exception as e:
-                print('特定資料表顯示作業發生錯誤')
+                print('刪除資料表顯示作業發生錯誤')
                 print(f'錯誤代碼為：{e.errno}')
                 print(f'錯誤訊息為：{e.strerror}')
         elif choice == "3":

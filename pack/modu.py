@@ -268,7 +268,7 @@ def edit_books(db_path: str, datas: tuple) -> None:
         print("欲修改書籍資料不存在")
     else:
         cmd = """Update books set title = ?, author = ?, publisher = ?, year = ?
-        where title = ?"""
+        where title like ?"""
         cursor.execute(cmd, (title, author, publisher, year, index))
         print("異動 1 記錄")
         conn.commit()
@@ -288,8 +288,7 @@ def delete_books(db_path: str, title: str):
     if book_exists is None:
         print("欲刪除書籍資料不存在")
     else:
-        cmd = "Delete from books where title = ?"
-        cursor.execute(cmd, title)
+        cursor.execute(f"Delete from books where title like '{title}'")
         print("異動 1 記錄")
         conn.commit()
         # Show changed data
