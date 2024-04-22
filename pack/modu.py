@@ -14,12 +14,14 @@ def create_db(db_path: str) -> None:
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
+        # Create table users
         cmd = """Create table if not exists users(
             user_id integer primary key autoincrement,
             username text not null,
             password text not null
             );"""
         cursor.execute(cmd)
+        # Create table books
         cmd = """Create table if not exists books(
             book_id integer primary key autoincrement,
             title text not null,
@@ -92,6 +94,7 @@ def check_table(db_path: str) -> bool:
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
+        # Check talbe in database
         tables = ("users", "books")
         for t in tables:
             cursor.execute("SELECT * FROM sqlite_master WHERE type = 'table' AND name = ?", (t,))
@@ -124,10 +127,12 @@ def login(db_path: str, account: str, password: str) -> bool:
     try:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
+        # Get user information
         cursor.execute("Select username, password from users")
         ac_table = cursor.fetchall()
         ac_exists = False
         pwd_correct = False
+        # Check the login information is correct
         for data in ac_table:
             ac, pwd = data
             if account == ac:
@@ -170,24 +175,77 @@ def menu_builder() -> None:
 
 
 def show_books(db_path: str) -> None:
-    """Show the books data table
+    """Show the books information
 
     Args:
         db_path (str): Database path
     """
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
-
+    # Get data
     cursor.execute("Select title,author,publisher,year from books")
     result = cursor.fetchall()
     print("|  title  |   author   |  publisher  |   year  |")
+    # Show data
     for book in result:
         title, author, publisher, year = book
-        print(f"|{title:6s}|{author:9s}|{publisher:7s}|{year:8d}|")
+        print(f"|{title:6s}|{author:9s}|{publisher:8s}|{year:8d}|")
     conn.commit()
     cursor.close()
     conn.close()
 
 
-def select_book() -> None:
+def search_books_data(db_path: str, index: str) -> None:
+    """Show the search books information
+
+    Args:
+        db_path (str): _description_
+        index (str): _description_
+    """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    # Get specific information
+    cmd = f"""select title,author,publisher,year from books
+    where title like '{index}' or author like '{index}' """
+    cursor.execute(cmd)
+    result = cursor.fetchall()
+    print("|  title  |   author   |  publisher  |   year  |")
+    for book in result:
+        title, author, publisher, year = book
+        print(f"|{title:6s}|{author:9s}|{publisher:8s}|{year:8d}|")
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def add_books(db_path: str, datas: tuple) -> None:
+    """Add new books information to database
+
+    Args:
+        db_path (str): Database path
+        datas (tuple): Data with books information
+    """
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    # Data split
+    title: str
+    author: str
+    publisher: str
+    year: str
+    title, author, publisher, year = datas
+    year: int = int(year)
+    # Check the book exists or exists, if not exists append it
+    result = cursor.execute(f"Select title from books where title like '{title}'")
+    if result is not None:
+        print("新增失敗：圖書已經存在")
+    else:
+        cmd = "Insert into books(title, author, publisher, year) values(?, ?, ?, ?)"
+        cursor.execute(cmd, (title, author, publisher, year))
+        print("異動 1 記錄")
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def edit_books(db_path: str, datas: tuple) -> None:
     pass
