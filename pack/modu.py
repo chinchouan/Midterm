@@ -185,11 +185,11 @@ def show_books(db_path: str) -> None:
     # Get data
     cursor.execute("Select title,author,publisher,year from books")
     result = cursor.fetchall()
-    print("|  title   |   author   |  publisher   |  year  |")
+    print("|　　　　書名　　　　|　　　　作者　　　　|　　　出版社　　　　| 年份 |")
     # Show data
     for book in result:
         title, author, publisher, year = book
-        print(f"|{title:\u3000<5s}|{author:\u3000<6s}|{publisher:\u3000<7s}|{year:<8d}|")
+        print(f"|{title:\u3000<10s}|{author:\u3000<10s}|{publisher:\u3000<10s}|{year:<6d}|")
     conn.commit()
     cursor.close()
     conn.close()
@@ -209,11 +209,11 @@ def search_books_data(db_path: str, index: str) -> None:
     where title like '{index}' or author like '{index}' """
     cursor.execute(cmd)
     result = cursor.fetchall()
-    print("|  title   |   author   |  publisher   |  year  |")
+    print("|　　　　書名　　　　|　　　　作者　　　　|　　　出版社　　　　| 年份 |")
     # Show data
     for book in result:
         title, author, publisher, year = book
-        print(f"|{title:\u3000<5s}|{author:\u3000<6s}|{publisher:\u3000<7s}|{year:<8d}|")
+        print(f"|{title:\u3000<10s}|{author:\u3000<10s}|{publisher:\u3000<10s}|{year:<6d}|")
     conn.commit()
     cursor.close()
     conn.close()
